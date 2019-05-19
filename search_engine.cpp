@@ -1,18 +1,21 @@
 #include <iostream>
-//#include <ifstream>
-//#include <ofstream>
+#include <fstream>
+#include <string>
+#include <sstream>
 using namespace std;
 
 struct Node{
-	// array de ponteiros para proxima letra
-	// e um lista com os "ids" das páginas
-	//int pages[4] = {1,2,3,4};
-	int pages;
+	//pages é um ponteiro para o id do array de ids
+	//size é o tamanho do array de ids
+	//pChild[] é o array de ponteiros para filhos
+	int *pages;
+	int size;
 	Node *pChild[27];
 	
 	Node(){
 		for(int i = 0; i<26; i++) pChild[i] = nullptr; 
 	}
+	
 	int getIndex(char c){
 		// cada letra "c" retorna o índice no array
 		int index = 0;
@@ -31,46 +34,82 @@ class Trie{
 	Trie(){
 		pRoot = new Node();
 	}
-	void insert(string key, int pages){
+	
+	void insert(string key, int *pages, int size){
 		// "string key" é a palavra a ser inserida
-		// "int pages" é lista de "ids" das paginas
+		// "int *pages" é o ponteiro para o primeiro id do array de ids
+		// "int size" é o tamanho do array de ids
 		Node **pNode = &pRoot;
 		for(char c: key){
-			pNode = &((*pNode)->pChild[(*pNode)->getIndex(c)]);
-			if(*pNode == nullptr) (*pNode) = new Node();
+			pNode = &((*pNode)->pChild[(*pNode)->getIndex(c)]); //caminho para baixo
+			if(*pNode == nullptr) (*pNode) = new Node(); //verifico a existência
 		}
-		(*pNode)->pages = pages;
-		cout << " inserindo " << key << "... Resolver problema do array" << endl;
+		//defino atributos
+		(*pNode)->pages = pages; 
+		(*pNode)->size = size;
+		cout << " inserindo " << key << endl;
 	}
-	int search(string key){
+	
+	void search(string key){
 		// "string key" é a palavra buscada
 		Node *pNode = pRoot;
 		for(char c: key){
-			pNode = pNode->pChild[pNode->getIndex(c)];
-			cout << pNode->getIndex(c) << endl;
+			pNode = pNode->pChild[pNode->getIndex(c)]; //caminho até o último nó
 		}
-		cout << "Pegando em " << key << ".. Resolver problema com array" << endl;
-		return pNode->pages;
+		cout << "Pegando em node: " << key << endl;
+		open_pages(pNode->pages, pNode->size);
+		return;
 	}
-	private:		
+	private:
+	
+	void open_pages(int *pages, int size){
+		//a função percorre o array de ids
+		//pages é um ponteiro apontando para o primeiro elemento do array
+		//size é o tamanho do array de ids
+		for(int i=0; i<size; i++){
+			cout << *pages << ", ";
+			pages++;
+		}
+	}		
 };
 
 // lemos e processamos o "index.txt"
-void open_file(){
-	
+void open_file(string archive){
+	//abrindo a file
+	ifstream myfile;
+	myfile.open(archive);
+	//criando as strings que vão receber valor
+	stringstream sppliter;
+	string word, size_s, array_s;
+	if(myfile){
+		string line;
+		while(getline(myfile,line)){
+			sppliter << line;
+			sppliter >> word;
+			sppliter >> size_s;
+			sppliter >> array_s;
+			sppliter.clear();
+			int size = stoi(size_s);
+			
+		}
+	}
+	myfile.close();
 }
 int main(){
 	Trie trie;
 	cout << "Trie inicializada..." << endl;
+	ifstream myfile;
+	myfile.open("teste.txt");
+	stringstream sppliter;
+	string a, b, c, line;
+	getline(myfile,line);
+	sppliter << line;
+	sppliter >> a;
+	sppliter >> b;
+	sppliter >> c;
+	cout << a << endl;
+	cout << b << endl;
+	cout << c << endl;
 	
-	int pages = 1;
-	trie.insert("banana", pages);
-	trie.insert("batata", pages);
-	trie.insert("bauru", pages);
-	trie.insert("baiana", pages);
-	trie.insert("baderna", pages);
-	trie.insert("baluarte", pages);
-	trie.insert("batata", pages);
-	
-	cout << "valor: " << trie.search("batata") << endl;
+	return 0;
 }
