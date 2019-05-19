@@ -74,42 +74,41 @@ class Trie{
 };
 
 // lemos e processamos o "index.txt"
-void open_file(string archive){
+void open_file(string archive, Trie trie){
 	//abrindo a file
 	ifstream myfile;
 	myfile.open(archive);
 	//criando as strings que vão receber valor
 	stringstream sppliter;
-	string word, size_s, array_s;
+	string key, size_s, array_s;
 	if(myfile){
 		string line;
 		while(getline(myfile,line)){
+			//iterando por linha
 			sppliter << line;
-			sppliter >> word;
+			sppliter >> key;
 			sppliter >> size_s;
-			sppliter >> array_s;
-			sppliter.clear();
 			int size = stoi(size_s);
-			
+			//criando o array das colunas restantes
+			int pages[size];
+			int array;
+			for(int i=0; i < size; i++){
+				sppliter >> array_s;
+				cout << array_s << endl;
+				array = stoi(array_s);
+				pages[i] = array;
+			}
+			sppliter.clear();
+			int *p = pages;
+			trie.insert(key, p, size);
 		}
 	}
 	myfile.close();
 }
+
 int main(){
 	Trie trie;
-	cout << "Trie inicializada..." << endl;
-	ifstream myfile;
-	myfile.open("teste.txt");
-	stringstream sppliter;
-	string a, b, c, line;
-	getline(myfile,line);
-	sppliter << line;
-	sppliter >> a;
-	sppliter >> b;
-	sppliter >> c;
-	cout << a << endl;
-	cout << b << endl;
-	cout << c << endl;
-	
+	open_file("teste.txt", trie);
+	trie.search("fredson");
 	return 0;
 }
