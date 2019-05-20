@@ -5,15 +5,15 @@
 using namespace std;
 
 struct Node{
-	//pages é um ponteiro para o id do array de ids
-	//size é o tamanho do array de ids
-	//pChild[] é o array de ponteiros para filhos
+	// "int size" é o tamanho do array de ids
+	// "string key" é a palavra a ser inserida
+	// "int *pages" é ponteiro para o primeiro id do array
 	int *pages;
 	int size;
 	Node *pChild[27];
 	
 	Node(){
-		for(int i = 0; i<26; i++) pChild[i] = nullptr; 
+		for(int i = 0; i < 26; i++) pChild[i] = nullptr; 
 	}
 	
 	int getIndex(char c){
@@ -23,31 +23,62 @@ struct Node{
 			if(c == i) return index;
 			index += 1;
 		}
-	}	
+		return index;
+	}
 };
-
 class Trie{
 	protected:
+		int *index;
 		Node *pRoot;
 	public:
 	// constructor da Trie
-	Trie(){
+	Trie(string archive){
 		pRoot = new Node();
+		
+		// Carregando dados de "index.txt"
+		ifstream myfile;
+		myfile.open(archive);
+		
+		// criando strings que receberao valor
+		stringstream sppliter;
+		string key, size_s, array_s;
+		if(myfile){
+			string line;
+			while(getline(myfile,line)){
+				// iterando por linha
+				sppliter << line;
+				sppliter >> key;
+				sppliter >> size_s;
+				int size = stoi(size_s);
+				
+				
+				// criando o array das colunas restantes
+				// capacidade para até 100 milhoes de ids
+				index = new int[10000000];
+				for(int i=0; i < size; i++){
+					sppliter >> array_s;
+					index[i] = stoi(array_s);
+				}
+				sppliter.clear();
+				insert(key, index, size);
+			}
+		}
+		myfile.close();
 	}
 	
 	void insert(string key, int *pages, int size){
-		// "string key" é a palavra a ser inserida
-		// "int *pages" é o ponteiro para o primeiro id do array de ids
 		// "int size" é o tamanho do array de ids
+		// "string key" é a palavra a ser inserida
+		// "int *pages" é ponteiro para o primeiro id do array
 		Node **pNode = &pRoot;
 		for(char c: key){
 			pNode = &((*pNode)->pChild[(*pNode)->getIndex(c)]); //caminho para baixo
-			if(*pNode == nullptr) (*pNode) = new Node(); //verifico a existência
+			if(*pNode == nullptr) (*pNode) = new Node(); 		//verifico a existência
 		}
-		//defino atributos
-		(*pNode)->pages = pages; 
+		// defino atributos
+		(*pNode)->pages = pages;
 		(*pNode)->size = size;
-		cout << " inserindo " << key << endl;
+		cout << "Inserindo " << key << endl;
 	}
 	
 	void search(string key){
@@ -58,57 +89,29 @@ class Trie{
 		}
 		cout << "Pegando em node: " << key << endl;
 		open_pages(pNode->pages, pNode->size);
-		return;
 	}
 	private:
 	
 	void open_pages(int *pages, int size){
-		//a função percorre o array de ids
-		//pages é um ponteiro apontando para o primeiro elemento do array
-		//size é o tamanho do array de ids
+		// a função percorre o array de ids
+		// "int size" é o tamanho do array de ids
+		// "int *pages" é ponteiro para o primeiro id do array
 		for(int i=0; i<size; i++){
-			cout << *pages << ", ";
-			pages++;
+			cout << pages[i] << " ";
 		}
 	}		
 };
 
-// lemos e processamos o "index.txt"
-void open_file(string archive, Trie trie){
-	//abrindo a file
-	ifstream myfile;
-	myfile.open(archive);
-	//criando as strings que vão receber valor
-	stringstream sppliter;
-	string key, size_s, array_s;
-	if(myfile){
-		string line;
-		while(getline(myfile,line)){
-			//iterando por linha
-			sppliter << line;
-			sppliter >> key;
-			sppliter >> size_s;
-			int size = stoi(size_s);
-			//criando o array das colunas restantes
-			int pages[size];
-			int array;
-			for(int i=0; i < size; i++){
-				sppliter >> array_s;
-				cout << array_s << endl;
-				array = stoi(array_s);
-				pages[i] = array;
-			}
-			sppliter.clear();
-			int *p = pages;
-			trie.insert(key, p, size);
-		}
-	}
-	myfile.close();
-}
-
 int main(){
-	Trie trie;
-	open_file("teste.txt", trie);
-	trie.search("fredson");
+	Trie trie = Trie("teste.txt");
+	//open_file("teste.txt", trie);
+	
+	string input;
+	while(1){
+		cout << endl << "\nBuscar (0 para sair): ";
+		cin >> input;
+		if(input == "0") break;
+		trie.search(input);
+	}
 	return 0;
 }
