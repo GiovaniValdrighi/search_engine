@@ -1,7 +1,7 @@
-#include <iostream>
-#include <fstream>
 #include <string>
+#include <fstream>
 #include <sstream>
+#include <iostream>
 using namespace std;
 
 struct Node{
@@ -51,10 +51,8 @@ class Trie{
 				sppliter >> size_s;
 				int size = stoi(size_s);
 				
-				
 				// criando o array das colunas restantes
-				// capacidade para até 100 milhoes de ids
-				index = new int[10000000];
+				index = new int[size];
 				for(int i=0; i < size; i++){
 					sppliter >> array_s;
 					index[i] = stoi(array_s);
@@ -64,6 +62,7 @@ class Trie{
 			}
 		}
 		myfile.close();
+		cout << "... Loading index done!" << endl;
 	}
 	
 	void insert(string key, int *pages, int size){
@@ -80,15 +79,31 @@ class Trie{
 		(*pNode)->size = size;
 		cout << "Inserindo " << key << endl;
 	}
-	
-	void search(string key){
+	void search_keys(string *keys, int size){
+		// "keys" uma lista de palavras requisitadas
+		// "size" é o numero de palavras na requisicao
+		int *res;
+		int len_res;
+		search(keys[0], len_res, res);
+		open_pages(res, len_res);
+		for(int i = 1; i < size; i++){
+			// desejamos receber o retono e fazer a
+			// intercessao eficiante entre as listas
+			// supomos as listas de inteiros ordenadas
+			
+		}
+	}
+	void search(string key, int &len, int *&res){
 		// "string key" é a palavra buscada
+		// buscamos iteradamente até o ultimo node
 		Node *pNode = pRoot;
 		for(char c: key){
 			pNode = pNode->pChild[pNode->getIndex(c)]; //caminho até o último nó
 		}
 		cout << "Pegando em node: " << key << endl;
-		open_pages(pNode->pages, pNode->size);
+		
+		res = pNode->pages;
+		len = pNode->size;
 	}
 	private:
 	
@@ -105,13 +120,15 @@ class Trie{
 int main(){
 	Trie trie = Trie("teste.txt");
 	//open_file("teste.txt", trie);
+	string s[3] = {"giovani"};
+	trie.search_keys(s, 1);
 	
-	string input;
-	while(1){
-		cout << endl << "\nBuscar (0 para sair): ";
-		cin >> input;
-		if(input == "0") break;
-		trie.search(input);
-	}
+	//string input;
+	//while(1){
+	//	cout << endl << "\nEnter your query (0 - exit): ";
+	//	cin >> input;
+	//	if(input == "0") break;
+	//	trie.search(input);
+	//}
 	return 0;
 }
