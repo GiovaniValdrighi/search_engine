@@ -13,7 +13,7 @@ struct Node{
 	Node *pChild[37];
 	
 	Node(){
-		for(int i = 0; i < 26; i++) pChild[i] = nullptr; 
+		for(int i = 0; i < 37; i++) pChild[i] = nullptr; 
 	}
 	
 	int getIndex(char c){
@@ -71,13 +71,13 @@ class Trie{
 		// "int *pages" é ponteiro para o primeiro id do array
 		Node **pNode = &pRoot;
 		for(char c: key){
-			pNode = &((*pNode)->pChild[(*pNode)->getIndex(c)]); //caminho para baixo
-			if(*pNode == nullptr) (*pNode) = new Node(); 		//verifico a existência
+			pNode = &((*pNode)->pChild[(*pNode)->getIndex(c)]); // caminho para baixo 
+			if(*pNode == nullptr) (*pNode) = new Node(); 		// verifico a existência
 		}
 		// defino atributos
 		(*pNode)->pages = pages;
 		(*pNode)->size = size;
-		cout << "Inserindo " << key << endl;
+		cout << "Inserindo " << key << " (" << size << ")"<< endl;
 	}
 	void intersection(int *&A, int &len_a, int *B, int len_b){
 		// interceccao entre as listas A e B
@@ -116,6 +116,7 @@ class Trie{
 			
 			intersection(res, len_r, aux, len_a);
 		}
+		cout << "busca concluida" << endl;
 		open_pages(res, len_r);
 	}
 	void search(string key, int &len, int *&res){
@@ -125,7 +126,6 @@ class Trie{
 		for(char c: key){
 			pNode = pNode->pChild[pNode->getIndex(c)];
 		}
-		cout << "Pegando em node: " << key << endl;
 		
 		res = pNode->pages;
 		len = pNode->size;
@@ -144,9 +144,11 @@ class Trie{
 
 int main(){
 	Trie trie = Trie("teste.txt");
-	//open_file("teste.txt", trie);
-	string s[4] = {"outra", "giovani", "etecetera", "poco2"};
-	trie.search_keys(s, 4);
+	
+	string search;
+	cin >> search;
+	string s[20] = {"pzlzvrz", search};
+	trie.search_keys(s, 20);
 	
 	return 0;
 }
