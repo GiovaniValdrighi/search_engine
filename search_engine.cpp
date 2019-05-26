@@ -142,12 +142,15 @@ class Trie{
 };
 
 int main(){
+	// o programa segue os padroes sugeridos
 	Trie trie = Trie("index.txt");
 	
-	string search;
-	cin >> search;
-	string s[1] = {search};
-	trie.search_keys(s, 1);
-	
+	int len = 1;
+	string query;
+	while(true){
+		cout << "Enter your query: ";
+		cin  >> query;
+		
+	}
 	return 0;
 }
