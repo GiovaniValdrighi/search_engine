@@ -77,7 +77,6 @@ class Trie{
 		// defino atributos
 		(*pNode)->pages = pages;
 		(*pNode)->size = size;
-		cout << "Inserindo " << key << " (" << size << ")"<< endl;
 	}
 	void intersection(int *&A, int &len_a, int *B, int len_b){
 		// interceccao entre as listas A e B
@@ -143,12 +142,12 @@ class Trie{
 };
 
 int main(){
-	Trie trie = Trie("teste.txt");
+	Trie trie = Trie("index.txt");
 	
 	string search;
 	cin >> search;
-	string s[20] = {"pzlzvrz", search};
-	trie.search_keys(s, 20);
+	string s[1] = {search};
+	trie.search_keys(s, 1);
 	
 	return 0;
 }
