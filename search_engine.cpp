@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 using namespace std;
 
 struct Node{
@@ -15,6 +16,8 @@ struct Node{
 	
 	Node(){
 		for(int i = 0; i < 37; i++) pChild[i] = nullptr; 
+		pages = nullptr;
+		size = 0;
 	}
 	
 	int getIndex(char c){
@@ -116,6 +119,7 @@ class Trie{
 		}
 		
 	}
+	
 	void search(string key, int &len, int *&res){
 		// "string key" é a palavra buscada
 		// buscamos iteradamente até o ultimo node
@@ -128,6 +132,102 @@ class Trie{
 		res = pNode->pages;
 		len = pNode->size;
 	}
+	
+	vector<string> suggestion(string key, int maxCost){
+		//crio a primeira linha para o Leveshestein
+		int currentRow[key.size()+1];
+		for(int p = 0; p <= key.size()+1; p++) currentRow[p] = p;
+		
+		//crio o vetor de resultados, e a array palavra atual
+		vector<string> result_words;
+		int cur_word[key.size()+3];
+		int pos = 0;
+		
+		//transformo a key em um array de inteiros
+		int key_sz = key.size();
+		int key_ar[key_sz];
+		for(int i=0; i<key_sz;i++){
+			key_ar[i] = get_index(key[i]);
+		}
+		//chamo a função recursiva para cada um dos filhos
+		if (pRoot->pChild[key_ar[0]] != nullptr) recursive_sug(pRoot->pChild[key_ar[0]], key_ar[0], key_ar, key_sz, currentRow, result_words, cur_word, pos, maxCost);
+		for( int i = 0; i < 37; i++){
+			if ((pRoot->pChild[i] != nullptr) && (i != key_ar[0])){
+				recursive_sug(pRoot->pChild[i], i, key_ar, key_sz, currentRow, result_words, cur_word, pos, maxCost);
+			}
+		}
+		return result_words;
+	}
+	
+	void recursive_sug(Node *pNode, int cur_letter, int key_ar[], int key_sz, int previousRow[],vector<string>& result_words, int cur_word[], int pos, int maxCost){
+		//casos triviais
+		if((pos == key_sz+3) || (result_words.size()>=6)){
+			return;
+		}
+		
+		cur_word[pos] = cur_letter;
+		//calculo a nova linha de Leveshestein
+		int columns = key_sz+1;
+		int currentRow[columns];
+		currentRow[0] = previousRow[0]+1;
+		int replace_cost;
+		int mini = 1000;
+		for(int column=1; column<=columns; column++){
+			if (key_ar[column-1] != cur_letter){
+				replace_cost = 2;
+			}else{
+				replace_cost = 0;
+			}
+			currentRow[column] = min(currentRow[column-1]+1, min(previousRow[column]+1, previousRow[column-1]+replace_cost));
+			if (currentRow[column] < mini) mini = currentRow[column];
+		}
+		
+		
+		//se o último elemento da linha do Leveshstein for menor que maxCost
+		//e se esse pNode tiver pages, adiciono a palavra ao resultado
+		if((currentRow[columns] <= maxCost) && (pNode->pages != nullptr)){
+			result_words.push_back(get_string(cur_word, pos));	
+		}
+		
+		//se o custo minimo da coluna for menor que o custo máximo
+		//caminho para baixo nos filhos
+		pos++;
+		if(mini <= maxCost){
+			for(int i = 0; i < 37; i++){
+				if(pNode->pChild[i] != nullptr){
+					recursive_sug(pNode->pChild[i], i, key_ar,key_sz, currentRow, result_words, cur_word, pos, maxCost);
+				}
+			}
+		}	
+	}
+	
+	void print_sugest(string input){
+		vector<string> v = suggestion(input, 3);
+		cout << "Did you mean:" << endl;
+		for(const auto& x: v){
+			cout << "\t "<< x << endl;
+		}
+	}
+	
+	int get_index(char c){
+		// cada letra "c" retorna o índice no array
+		int index = 0;
+		for(char i: "aeioubcdfghjklmnpqrstvwxyz0123456789"){
+			if(c == i) return index;
+			index += 1;
+		}
+		return index;
+	}
+
+	string get_string(int ar[], int pos){
+		string alph = "aeioubcdfghjklmnpqrstvwxyz0123456789";
+		string w;
+		for(int i=0; i<=pos; i++){
+			w = w + alph[ar[i]];
+		}
+		return w;
+	}
+	
 	private:
 	
 	void open_pages(int *pages, int size){
@@ -177,7 +277,8 @@ int main(){
 		// exibimos sugestões de palavras semelhantes
 		if(len_r == 0){
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////
-			cout << "Sorry! No results were found.";
+			cout << "Sorry! No results were found." << endl;
+			trie.print_sugest(query);
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 		// exibimos os resultados e opcoes de usuario
