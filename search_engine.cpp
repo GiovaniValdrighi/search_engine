@@ -15,9 +15,9 @@ struct Node{
 	Node *pChild[37];
 	
 	Node(){
-		for(int i = 0; i < 37; i++) pChild[i] = nullptr; 
-		pages = nullptr;
 		size = 0;
+		pages = nullptr;
+		for(int i = 0; i < 37; i++) pChild[i] = nullptr;
 	}
 	
 	int getIndex(char c){
@@ -30,6 +30,7 @@ struct Node{
 		return index;
 	}
 };
+
 class Trie{
 	protected:
 		int *index;
@@ -229,21 +230,34 @@ class Trie{
 	}
 	
 	private:
-	
-	void open_pages(int *pages, int size){
-		// a função percorre o array de ids
-		// "int size" é o tamanho do array de ids
-		// "int *pages" é ponteiro para o primeiro id do array
-		for(int i=0; i<size; i++){
-			cout << pages[i] << " ";
-		}
-	}		
 };
 
-int main(){
-	// o programa segue os padroes sugeridos
-	Trie trie = Trie("index.txt");
+string get_page(string page, int *res){
+	// carregamos a página do artigo desejado
+	string text = "";
+	string aux = "";
+	ifstream file;
 	
+	file.open("docs/doc_" + to_string(res[stoi(page) - 1]));
+	if(file) while(getline(file,aux)) text += "\n" + aux;
+	file.close();
+	
+	return text;
+}
+
+string get_title(int page, int *res){
+	// carregamos o titulo do artigo desejado
+	string title = "";
+	ifstream file;
+	
+	file.open("docs/doc_" + to_string(res[page]));
+	if(file) getline(file,title);
+	file.close();
+	
+	return title;
+}
+
+void show_menu(Trie trie){
 	int size;			// numero de palavras requisitadas
 	int *res;			// ponteiro para o array com ids
 	int len_r;			// comprimento do array das paginas
@@ -251,69 +265,70 @@ int main(){
 	string query;		// linha de entrada da requisicao
 	string keys[30];	// array de palavras (keys) separadas
 	
-	while(true){
-		// recebemos e tratamos a entrada requisitada
-		// separamos a contamos as palavras distintas
-		size = 0;
-		aux = "";
-		cout << "Enter your query: ";
-		getline(cin, query);
-		query += ' ';
-		for(auto c: query){
-			if((c == ' ' || c == '\t') && aux != ""){
-				keys[size] = aux;
-				aux = "";
-				size++;
-			}
-			else aux += c;
+	string title = "";
+	ifstream file;
+	
+	// recebemos e tratamos a entrada requisitada
+	// separamos a contamos as palavras distintas
+	size = 0;
+	aux = "";
+	cout << "\nEnter your query: ";
+	getline(cin, query);
+	query += ' ';
+	for(auto c: query){
+		if((c == ' ' || c == '\t') && aux != ""){
+			keys[size] = aux;
+			aux = "";
+			size++;
 		}
-		
-		// fazemos a busca das páginas e recebemos os 
-		// resultados diretamente em "res" e "len_r"
-		float time = clock();
-		trie.search_keys(keys, size, res, len_r);
-		time = (clock() - time) / CLOCKS_PER_SEC;
-		
-		// exibimos sugestões de palavras semelhantes
-		if(len_r == 0){
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////
-			cout << "Sorry! No results were found." << endl;
-			trie.print_sugest(query);
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////
-		}
-		// exibimos os resultados e opcoes de usuario
-		else{
-			cout << "\n.. About " << len_r << " results";
-			cout << " (" << time << " seconds)" << endl;
-			
-			for(int i = 0; i <= len_r; i++){
-				// exibimos resultaods em intervalos de 20
-				if(i == len_r || i > 0 && i % 20 == 0){
-					cout << "\nDo you want to open any result?" << endl;
-					cout << "    result number to open" << endl;
-					cout << "    n  - No, thanks." << endl;
-					if(i != len_r) cout << "    m  - 20 more." << endl;
-					cout << "Option: ";
-					cin >> aux;
-					
-					if(aux == "n") break;
-					if(aux == "m") continue;
-					//aux = open_page(stoi(aux));
-					/////////////////////////////////////////////////////////////////////////////////////////////////////////
-					aux = "Imagine a pagina\nImagine a pagina\n\n\n\n\n\n";
-					/////////////////////////////////////////////////////////////////////////////////////////////////////////
-					cout << aux;
-					break;
-				}
-				//aux = open_title(res[i]);
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-				aux = "imagine o titulo";
-				/////////////////////////////////////////////////////////////////////////////////////////////////////////
-				cout << "[" << i + 1 << "] " << aux << endl;
-			}
-		}
-		
-		cin.ignore();
+		else aux += c;
 	}
+	
+	// fazemos a busca das páginas e recebemos os 
+	// resultados diretamente em "res" e "len_r"
+	float time = clock();
+	trie.search_keys(keys, size, res, len_r);
+	time = (clock() - time) / CLOCKS_PER_SEC;
+	
+	// exibimos sugestões de palavras semelhantes
+	// caso em que o resultado da busca e vazio
+	if(len_r == 0){
+		cout << "Sorry! No results were found." << endl;
+		trie.print_sugest(query);
+	}
+	// exibimos os resultados e opcoes de usuario
+	// caso em que o resultado da busca e cheio
+	else{
+		cout << "\n.. About " << len_r << " results";
+		cout << " (" << time << " seconds)" << endl;
+		
+		for(int i = 0; i <= len_r; i++){
+			// exibimos resultaods em intervalos de 20
+			if(i == len_r || i > 0 && i % 20 == 0){
+				cout << "\nDo you want to open any result?" << endl;
+				cout << "    result number to open" << endl;
+				cout << "    n  - No, thanks." << endl;
+				if(i != len_r) cout << "    m  - 20 more." << endl;
+				cout << "Option: ";
+				cin >> aux;
+				
+				if(aux == "n") break;
+				if(aux == "m") continue;
+				// carregamos a página do artigo desejado
+				cout << get_page(aux, res) << endl;
+				break;
+			}
+			// carregamos o titulo do artigo desejado
+			cout << "[" << i + 1 << "] " << get_title(i, res) << endl;
+		}
+	}
+	cin.ignore();
+}
+
+int main(){
+	// o programa segue os padroes sugeridos
+	Trie trie = Trie("index.txt");
+	while(true) show_menu(trie);
+	
 	return 0;
 }
