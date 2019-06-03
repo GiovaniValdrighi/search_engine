@@ -126,8 +126,8 @@ class Trie{
 		// buscamos iteradamente até o ultimo node
 		Node *pNode = pRoot;
 		for(char c: key){
-			if(pNode == nullptr){len= 0; return;}
 			pNode = pNode->pChild[pNode->getIndex(c)];
+			if(pNode == nullptr){len= 0; return;}
 		}
 		
 		res = pNode->pages;
@@ -303,8 +303,11 @@ void show_menu(Trie trie){
 		cout << " (" << time << " seconds)" << endl;
 		
 		for(int i = 0; i <= len_r; i++){
+			// carregamos o titulo do artigo desejado
+			cout << "[" << i + 1 << "] " << get_title(i, res) << endl;
+			
 			// exibimos resultaods em intervalos de 20
-			if(i == len_r || i > 0 && i % 20 == 0){
+			if(i + 1 == len_r || i > 0 && (i + 1) % 20 == 0){
 				cout << "\nDo you want to open any result?" << endl;
 				cout << "    result number to open" << endl;
 				cout << "    n  - No, thanks." << endl;
@@ -318,8 +321,6 @@ void show_menu(Trie trie){
 				cout << get_page(aux, res) << endl;
 				break;
 			}
-			// carregamos o titulo do artigo desejado
-			cout << "[" << i + 1 << "] " << get_title(i, res) << endl;
 		}
 	}
 	cin.ignore();
