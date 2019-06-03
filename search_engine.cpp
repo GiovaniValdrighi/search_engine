@@ -1,9 +1,10 @@
 #include <string>
-#include <time.h>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <iomanip>
 using namespace std;
 
 struct Node{
@@ -286,9 +287,11 @@ void show_menu(Trie trie){
 	
 	// fazemos a busca das páginas e recebemos os 
 	// resultados diretamente em "res" e "len_r"
-	float time = clock();
+
+	auto start = chrono::steady_clock::now();
 	trie.search_keys(keys, size, res, len_r);
-	time = (clock() - time) / CLOCKS_PER_SEC;
+	auto end = chrono::steady_clock::now();
+	auto diff = end - start;
 	
 	// exibimos sugestões de palavras semelhantes
 	// caso em que o resultado da busca e vazio
@@ -299,8 +302,8 @@ void show_menu(Trie trie){
 	// exibimos os resultados e opcoes de usuario
 	// caso em que o resultado da busca e cheio
 	else{
-		cout << "\n.. About " << len_r << " results";
-		cout << " (" << time << " seconds)" << endl;
+		cout << "\n.. About " << len_r << " results in ";
+		cout << fixed << showpoint << setprecision(10) << chrono::duration <double> (diff).count() << " seconds." << endl;
 		
 		for(int i = 0; i <= len_r; i++){
 			// carregamos o titulo do artigo desejado
