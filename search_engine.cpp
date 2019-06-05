@@ -112,6 +112,7 @@ class Trie{
 		myfile.open(archive);
 		
 		// criando strings que receberao valor
+		int counter = 0;
 		stringstream sppliter;
 		string key, size_s, array_s;
 		if(myfile){
@@ -131,6 +132,8 @@ class Trie{
 				}
 				sppliter.clear();
 				insert(key, index, size);
+				counter ++;
+				if(counter % 20000 == 0) cout << "Loaded " << counter << " words." << endl;
 			}
 		}
 		myfile.close();
@@ -324,7 +327,7 @@ string get_page(string page, int *res){
 	string aux = "";
 	ifstream file;
 	
-	file.open("docs/doc_" + to_string(res[stoi(page) - 1]));
+	file.open("n_docs/doc_" + to_string(res[stoi(page) - 1] / 10000) + "/doc_" + to_string(res[stoi(page) - 1]));
 	if(file) while(getline(file,aux)) text += "\n" + aux;
 	file.close();
 	
@@ -336,7 +339,7 @@ string get_title(int page, int *res){
 	string title = "";
 	ifstream file;
 	
-	file.open("docs/doc_" + to_string(res[page]));
+	file.open("n_docs/doc_" + to_string(res[page] / 10000) + "/doc_" + to_string(res[page]));
 	if(file) getline(file,title);
 	file.close();
 	
