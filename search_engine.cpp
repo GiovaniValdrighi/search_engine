@@ -30,6 +30,71 @@ struct Node{
 		}
 		return index;
 	}
+	
+	void serialize(ofstream &out){
+		// serializamos recursivamente os nodes
+		// "n": node nullptr
+		// "?": node sem dado
+		// ";": node sem filhos
+		
+		// sobre a serializacao do dado no node
+		if(pages == nullptr) out << "? ";
+		else{
+			out << size << " ";
+			for(int i = 0; i < size; i++)
+				out << pages[i] << " " ;
+		}
+		
+		// sobre a iteracao para todos os filhos
+		bool leaf = true; 		// node eh folha
+		for(int i = 0; i < 37; i++) {
+			if(pChild[i] != nullptr){
+				leaf = false; break;
+			}
+		}
+		// caso folha interrompemos a iteracao
+		if(leaf){out << "; "; return;}
+		// iteramos para filhos recursivamente
+		for(int i = 0; i < 37; i++){
+			if(pChild[i] == nullptr) out << "n ";
+			else pChild[i]->serialize(out);
+		}
+	}
+	
+	void deserialize(ifstream &in, string &input){
+		// serializamos recursivamente os nodes
+		// "n": node nullptr
+		// "?": node sem dado
+		// ";": node sem filhos
+		if(input[0] != '?'){
+			// certamente existe um linha de dados
+			// criando strings que receberao valor
+			int size = stoi(input);
+			// carrego array das colunas restantes
+			pages = new int[size];
+			this->size = size;
+			cout << size << " ";
+			for(int i = 0; i < size; i++){
+				in >> input;
+				cout << input << " ";
+				pages[i] = stoi(input);
+			}
+			cout << endl;
+		}
+		
+		// parte da serializacao sobre os children
+		in >> input;
+		if(input[0] != ';'){
+			for(int i = 0; i < 37; i++){
+				if(input[0] != 'n' && input != ""){
+					pChild[i] = new Node();
+					(pChild[i])->deserialize(in, input);
+					continue;
+				}
+				in >> input;
+			}
+		}else in >> input;
+	}
 };
 
 class Trie{
@@ -38,6 +103,7 @@ class Trie{
 		Node *pRoot;
 	public:
 	// constructor da Trie
+	Trie(){pRoot = new Node();}
 	Trie(string archive){
 		pRoot = new Node();
 		
@@ -230,7 +296,26 @@ class Trie{
 		return w;
 	}
 	
-	private:
+	
+	void save(string filename){
+		// abrimos o arquivo para a serializacao
+		// executamos a primeira serie recursiva
+		ofstream out;
+		out.open(filename);
+		pRoot->serialize(out);
+		out.close();
+	}
+	
+	void load(string filename){
+		// acessamos o arquivo da serializacao
+		// executamos a primeira serie recursiva
+		ifstream in;
+		string line;
+		in.open(filename);
+		in >> line;
+		pRoot->deserialize(in, line);
+		in.close();
+	}
 };
 
 string get_page(string page, int *res){
@@ -305,7 +390,7 @@ void show_menu(Trie trie){
 		cout << "\n.. About " << len_r << " results in ";
 		cout << fixed << showpoint << setprecision(10) << chrono::duration <double> (diff).count() << " seconds." << endl;
 		
-		for(int i = 0; i <= len_r; i++){
+		for(int i = 0; i < len_r; i++){
 			// carregamos o titulo do artigo desejado
 			cout << "[" << i + 1 << "] " << get_title(i, res) << endl;
 			
@@ -330,8 +415,15 @@ void show_menu(Trie trie){
 }
 
 int main(){
-	// o programa segue os padroes sugeridos
-	Trie trie = Trie("index.txt");
+	//Trie trie = Trie("teste.txt");
+	//trie.save("trie.srlz");
+	//cout << "Salvo com sucesso!" << endl;
+	
+	Trie trie;
+	trie.load("trie.srlz");
+	cout << "Lido com sucesso!" << endl;
+	
+	//show_menu(trie);
 	while(true) show_menu(trie);
 	
 	return 0;
