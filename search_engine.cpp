@@ -172,7 +172,7 @@ class Trie{
 		}
 		len_a = len_r;
 	}
-	void search_keys(string *keys, int size, int *&res, int &len_r){
+	void search_keys(string *keys, int size, int *&res, int &len_r, string &query){
 		// "keys" uma lista das palavras requisitadas
 		// "size" é numero de palavras na requisicao
 		search(keys[0], len_r, res);
@@ -187,6 +187,7 @@ class Trie{
 			search(key, len_a, aux);
 			
 			intersection(res, len_r, aux, len_a);
+			if(len_r == 0){ query = key; return; }
 		}
 		
 	}
@@ -377,7 +378,7 @@ void show_menu(Trie trie){
 	// resultados diretamente em "res" e "len_r"
 
 	auto start = chrono::steady_clock::now();
-	trie.search_keys(keys, size, res, len_r);
+	trie.search_keys(keys, size, res, len_r, query);
 	auto end = chrono::steady_clock::now();
 	auto diff = end - start;
 	
@@ -386,6 +387,7 @@ void show_menu(Trie trie){
 	if(len_r == 0){
 		cout << "Sorry! No results were found." << endl;
 		trie.print_sugest(query);
+		cout << "Enter your query:";
 	}
 	// exibimos os resultados e opcoes de usuario
 	// caso em que o resultado da busca e cheio
@@ -398,7 +400,7 @@ void show_menu(Trie trie){
 			cout << "[" << i + 1 << "] " << get_title(i, res) << endl;
 			
 			// exibimos resultaods em intervalos de 20
-			if(i + 1 == len_r || i > 0 && (i + 1) % 20 == 0){
+			if(i + 1 == len_r || (i > 0 && (i + 1) % 20 == 0)){
 				cout << "\nDo you want to open any result?" << endl;
 				cout << "    result number to open" << endl;
 				cout << "    n  - No, thanks." << endl;
@@ -418,13 +420,14 @@ void show_menu(Trie trie){
 }
 
 int main(){
-	//Trie trie = Trie("teste.txt");
+	cout << "Wait a few seconds."<< endl;
+	Trie trie = Trie("index.txt");
 	//trie.save("trie.srlz");
 	//cout << "Salvo com sucesso!" << endl;
 	
-	Trie trie;
-	trie.load("trie.srlz");
-	cout << "Lido com sucesso!" << endl;
+	//Trie trie;
+	//trie.load("trie.srlz");
+	//cout << "Lido com sucesso!" << endl;
 	
 	//show_menu(trie);
 	while(true) show_menu(trie);
