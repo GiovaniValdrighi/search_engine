@@ -12,7 +12,7 @@ Além disso, disponibilizamos um vídeo explicando o processo criativo, tal como
 * Fazer download do arquivo index.txt e colocá-lo dentro do diretório. O arquivo pode ser obtido [aqui](https://drive.google.com/open?id=1TprDHMfxBC0V9Q9fONavPac5KHy7P2To).
 * Fazer download do arquivo n_docs.zip, e extraí-lo dentro do diretório. O arquivo pode ser obtido [aqui](https://gvmail-my.sharepoint.com/:u:/g/personal/b36998_fgv_edu_br/EanvboSjztVDnVPk7N6qhUEBcceSrr33V1TwbtDkHH6fFA?e=tLt66p).
 * Com o terminal, caminhar para dentro do diretório e executar o comando:
-`g++ -std=c++11 search_engine.cpp -o engine -I/usr/local/include`
+`g++ -std=c++11 terminal.cpp -o engine -I/usr/local/include`
 * Após a compilação, executar o comando:
 `./engine`
 * Após aguardar a construção da árvore, siga as instruções do terminal para realizar a pesquisa.
@@ -23,7 +23,7 @@ Além disso, disponibilizamos um vídeo explicando o processo criativo, tal como
 * Fazer download do arquivo index.txt e colocá-lo dentro do diretório. O arquivo pode ser obtido [aqui](https://drive.google.com/open?id=1TprDHMfxBC0V9Q9fONavPac5KHy7P2To).
 * Fazer download do arquivo n_docs.zip, e extraí-lo dentro do diretório. O arquivo pode ser obtido [aqui](https://gvmail-my.sharepoint.com/:u:/g/personal/b36998_fgv_edu_br/EanvboSjztVDnVPk7N6qhUEBcceSrr33V1TwbtDkHH6fFA?e=tLt66p).
 * Com o terminal, caminhar para dentro do diretório e executar o comando:
-`g++ -std=c++11 search_engine_server.cpp -o engine_server -I/usr/local/include`
+`g++ -std=c++11 server.cpp -o engine_server -I/usr/local/include`
 * Após a compilação, executar o comando:
 `./engine_server`
 * Após aguardar a construção da árvore, acesse no seu navegador a página `http://localhost:8080/index.html` e faça sua pesquisa.
