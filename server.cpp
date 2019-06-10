@@ -26,7 +26,8 @@ string show_more(int *&res, int len_r, int &pos){
 		aux = aux + get_title(pos, res) + "</a></br>";
 
 		if(pos + 1 == len_r || (pos > 0 && (pos + 1) % 20 == 0)){
-			aux += "</br></br><a href =javascript:query_more(\'cpp_server_show_more\'); >";
+			pos += 1;
+			aux += "</br></br><a href =javascript:query_link(\'cpp_server_show_more\'); >";
 			aux += "... show 20 more >>";
 			aux += "</a>";
 			return aux;
