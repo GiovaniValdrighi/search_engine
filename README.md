@@ -26,5 +26,5 @@ Além disso, disponibilizamos um vídeo explicando o processo criativo, tal como
 * Com o terminal, caminhar para dentro do diretório e executar o comando:
 `g++ -std=c++11 search_engine_server.cpp -o engine_server -I/usr/local/include`
 * Após a compilação, executar o comando:
-`./engine_serve`
+`./engine_server`
 * Após aguardar a construção da árvore, acesse no seu navegador a página `http://localhost:8080/index.html` e faça sua pesquisa.
