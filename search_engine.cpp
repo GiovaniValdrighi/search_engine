@@ -30,71 +30,6 @@ struct Node{
 		}
 		return index;
 	}
-	
-	void serialize(ofstream &out){
-		// serializamos recursivamente os nodes
-		// "n": node nullptr
-		// "?": node sem dado
-		// ";": node sem filhos
-		
-		// sobre a serializacao do dado no node
-		if(pages == nullptr) out << "? ";
-		else{
-			out << size << " ";
-			for(int i = 0; i < size; i++)
-				out << pages[i] << " " ;
-		}
-		
-		// sobre a iteracao para todos os filhos
-		bool leaf = true; 		// node eh folha
-		for(int i = 0; i < 37; i++) {
-			if(pChild[i] != nullptr){
-				leaf = false; break;
-			}
-		}
-		// caso folha interrompemos a iteracao
-		if(leaf){out << "; "; return;}
-		// iteramos para filhos recursivamente
-		for(int i = 0; i < 37; i++){
-			if(pChild[i] == nullptr) out << "n ";
-			else pChild[i]->serialize(out);
-		}
-	}
-	
-	void deserialize(ifstream &in, string &input){
-		// serializamos recursivamente os nodes
-		// "n": node nullptr
-		// "?": node sem dado
-		// ";": node sem filhos
-		if(input[0] != '?'){
-			// certamente existe um linha de dados
-			// criando strings que receberao valor
-			int size = stoi(input);
-			// carrego array das colunas restantes
-			pages = new int[size];
-			this->size = size;
-			cout << size << " ";
-			for(int i = 0; i < size; i++){
-				in >> input;
-				cout << input << " ";
-				pages[i] = stoi(input);
-			}
-			cout << endl;
-		}
-		
-		// parte da serializacao sobre os children
-		in >> input;
-		if(input[0] != ';'){
-			for(int i = 0; i < 37; i++){
-				if(input[0] != 'n' && input != ""){
-					pChild[i] = new Node();
-					(pChild[i])->deserialize(in, input);
-					continue;
-				}
-				in >> input;
-			}
-		}else in >> input;
-	}
 };
 
 class Trie{
@@ -188,8 +123,7 @@ class Trie{
 			
 			intersection(res, len_r, aux, len_a);
 			if(len_r == 0){ query = key; return; }
-		}
-		
+		}	
 	}
 	
 	void search(string key, int &len, int *&res){
@@ -273,12 +207,13 @@ class Trie{
 		}	
 	}
 	
-	void print_sugest(string input){
+	string sugest(string input){
 		vector<string> v = suggestion(input, 3);
-		cout << "Did you mean:" << endl;
+		string aux = "Did you mean:\n" ;
 		for(const auto& x: v){
-			cout << "\t "<< x << endl;
+			aux = aux + "     " + x + "\n";
 		}
+		return aux;
 	}
 	
 	int get_index(char c){
@@ -298,27 +233,6 @@ class Trie{
 			w = w + alph[ar[i]];
 		}
 		return w;
-	}
-	
-	
-	void save(string filename){
-		// abrimos o arquivo para a serializacao
-		// executamos a primeira serie recursiva
-		ofstream out;
-		out.open(filename);
-		pRoot->serialize(out);
-		out.close();
-	}
-	
-	void load(string filename){
-		// acessamos o arquivo da serializacao
-		// executamos a primeira serie recursiva
-		ifstream in;
-		string line;
-		in.open(filename);
-		in >> line;
-		pRoot->deserialize(in, line);
-		in.close();
 	}
 };
 
@@ -345,92 +259,4 @@ string get_title(int page, int *res){
 	file.close();
 	
 	return title;
-}
-
-void show_menu(Trie trie){
-	int size;			// numero de palavras requisitadas
-	int *res;			// ponteiro para o array com ids
-	int len_r;			// comprimento do array das paginas
-	string aux;			
-	string query;		// linha de entrada da requisicao
-	string keys[30];	// array de palavras (keys) separadas
-	
-	string title = "";
-	ifstream file;
-	
-	// recebemos e tratamos a entrada requisitada
-	// separamos a contamos as palavras distintas
-	size = 0;
-	aux = "";
-	cout << "\nEnter your query: ";
-	getline(cin, query);
-	query += ' ';
-	for(auto c: query){
-		if((c == ' ' || c == '\t') && aux != ""){
-			keys[size] = aux;
-			aux = "";
-			size++;
-		}
-		else aux += c;
-	}
-	
-	// fazemos a busca das páginas e recebemos os 
-	// resultados diretamente em "res" e "len_r"
-
-	auto start = chrono::steady_clock::now();
-	trie.search_keys(keys, size, res, len_r, query);
-	auto end = chrono::steady_clock::now();
-	auto diff = end - start;
-	
-	// exibimos sugestões de palavras semelhantes
-	// caso em que o resultado da busca e vazio
-	if(len_r == 0){
-		cout << "Sorry! No results were found." << endl;
-		trie.print_sugest(query);
-		cout << "Enter your query:";
-	}
-	// exibimos os resultados e opcoes de usuario
-	// caso em que o resultado da busca e cheio
-	else{
-		cout << "\n.. About " << len_r << " results in ";
-		cout << fixed << showpoint << setprecision(10) << chrono::duration <double> (diff).count() << " seconds." << endl;
-		
-		for(int i = 0; i < len_r; i++){
-			// carregamos o titulo do artigo desejado
-			cout << "[" << i + 1 << "] " << get_title(i, res) << endl;
-			
-			// exibimos resultaods em intervalos de 20
-			if(i + 1 == len_r || (i > 0 && (i + 1) % 20 == 0)){
-				cout << "\nDo you want to open any result?" << endl;
-				cout << "    result number to open" << endl;
-				cout << "    n  - No, thanks." << endl;
-				if(i != len_r) cout << "    m  - 20 more." << endl;
-				cout << "Option: ";
-				cin >> aux;
-				
-				if(aux == "n") break;
-				if(aux == "m") continue;
-				// carregamos a página do artigo desejado
-				cout << get_page(aux, res) << endl;
-				break;
-			}
-		}
-	}
-	cin.ignore();
-}
-
-int main(){
-	cout << "Wait a few seconds."<< endl;
-	Trie trie = Trie("index.txt");
-	//trie.save("trie.srlz");
-	//cout << "Salvo com sucesso!" << endl;
-	
-	//Trie trie;
-	//trie.load("trie.srlz");
-	//cout << "Lido com sucesso!" << endl;
-	
-	//show_menu(trie);
-	while(true) show_menu(trie);
-	
-	return 0;
 }
