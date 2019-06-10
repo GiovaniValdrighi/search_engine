@@ -5,7 +5,7 @@ Indexamos as páginas em uma estrutura de acesso eficiente de tal modo que um us
   * A lista de títulos correpondentes
   * O tempo de busca 
 
-Além disso, disponibilizamos um vídeo explicando o processo criativo, tal como os objetivos e as soluções utilizadas durante implementação através do link [link]. Esse é um projeto inicialmente de âmbito educacional.
+Além disso, disponibilizamos um vídeo explicando o processo criativo, tal como os objetivos e as soluções utilizadas durante implementação através do [link](https://youtu.be/9pxUYCLP2rA). Esse é um projeto inicialmente de âmbito educacional.
 
 ## Para a execução do projeto, você deve:
 * Clonar o repositório em seu computador.
