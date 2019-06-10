@@ -22,10 +22,10 @@ string show_more(int *&res, int len_r, int &pos){
 	// geramos o link d abrir as paginas
 	for(; pos < len_r; pos++){
 		aux = aux + "<a href =javascript:query_link(\'cpp_server_open_page";
-		aux = aux + to_string(pos) + "\'); > Title: ";
+		aux = aux + to_string(pos) + "\'); > [" + to_string(pos+1) + "] ";
 		aux = aux + get_title(pos, res) + "</a></br>";
 
-		if(pos + 1 == len_r || (pos > 0 && (pos + 1) % 20 == 0)){
+		if((pos > 0 && (pos + 1) % 20 == 0)){
 			pos += 1;
 			aux += "</br></br><a href =javascript:query_link(\'cpp_server_show_more\'); >";
 			aux += "... show 20 more >>";
@@ -123,6 +123,7 @@ int main() {
         for(char c: html){
             if(c == "\n\t"[0]){stream << "</br>"; continue;}
             if(c == "\n\t"[1]){stream << "     "; continue;}
+            if(c == "\n\t\""[2]){stream << "\'"; continue;}
             stream << c;
         }
         stream << "\"}";
