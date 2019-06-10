@@ -71,13 +71,7 @@ void show_menu(Trie trie){
 }
 
 int main(){
-	Trie trie = Trie("teste.txt");
-	//trie.save("trie.srlz");
-	//cout << "Salvo com sucesso!" << endl;
-	
-	//Trie trie;
-	//trie.load("trie.srlz");
-	//cout << "Lido com sucesso!" << endl;
+	Trie trie = Trie("index.txt");
 	
 	//show_menu(trie);
 	while(true) show_menu(trie);
