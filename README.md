@@ -1,6 +1,5 @@
 # search_engine
-Aplicação de busca à termos na biblioteca da Wikipédia. O kernel da busca desenvolvido em C++, e as GUI usam de aplicação Web com conexão via Python ao core da aplicação.
-
+Aplicação de busca à termos na biblioteca da Wikipédia. O kernel da busca desenvolvido em C++, interface em terminal e pequena GUI utilizando de aplicação Web.
 Indexamos as páginas em uma estrutura de acesso eficiente de tal modo que um usuário deve ser capaz de entrar com uma série de palavras a serem pesquisadas na biblioteca, retornando:
   * A quantidade de documentos correpondendo a pesquisa
   * A lista de títulos correpondentes
